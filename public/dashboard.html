@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(0, 198, 251, 0.5) 0%, 
+                rgba(0, 91, 234, 0.5) 100%),
+                url('/images/bank.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        /* Side Menu Styles */
+        .side-menu {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            height: 100vh;
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 91, 234, 0.2);
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(0, 198, 251, 0.1);
+        }
+
+        .menu-title {
+            display: flex;
+            align-items: center;
+            color: #2c3e50;
+        }
+
+        .menu-title i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 91, 234, 0.3);
+        }
+
+        /* Content Area Styles */
+        .content-area {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: calc(100vh - 160px);
+        }
+
+        /* User Management Styles */
+        .user-management {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .management-select {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px;
+            margin-bottom: 30px;
+            border: 2px solid #e3e3e3;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        /* Change Password Form Styles */
+        .change-password-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e3e3e3;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #00c6fb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 198, 251, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 91, 234, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Submenu styles */
+        .menu-item.has-submenu .arrow {
+            float: right;
+            transition: transform 0.3s;
+        }
+
+        .menu-item.has-submenu.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            display: none;
+            background: rgba(0, 198, 251, 0.05);
+        }
+
+        .menu-item.has-submenu.active .submenu {
+            display: block;
+        }
+
+        .submenu-item {
+            padding: 12px 25px 12px 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submenu-item:hover {
+            background: rgba(0, 198, 251, 0.1);
+        }
+
+        /* CRM Dashboard styles */
+        .crm-dashboard {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .terminal-options {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .terminal-btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .terminal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 91, 234, 0.3);
+        }
+
+        .terminals-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .edit-btn {
+            background: #00c6fb;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+        }
+
+        /* NCR Dashboard specific styles */
+        .ncr-dashboard {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #2ed573;
+            color: white;
+        }
+
+        .status-inactive {
+            background: #ff4757;
+            color: white;
+        }
+
+        .status-maintenance {
+            background: #ffa502;
+            color: white;
+        }
+
+        /* Cash status indicators */
+        .cash-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cash-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .cash-high { background: #2ed573; }
+        .cash-medium { background: #ffa502; }
+        .cash-low { background: #ff4757; }
+
+        .main-row {
+            background: white;
+        }
+
+        .sub-row {
+            background: #f8f9fa;
+            font-size: 0.95em;
+        }
+
+        .sub-row td {
+            border-top: none;
+        }
+
+        .expand-btn {
+            background: transparent;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .expand-btn:hover {
+            color: #005bea;
+        }
+
+        .expand-btn i {
+            transition: transform 0.3s;
+        }
+
+        .expand-btn i.fa-chevron-up {
+            transform: rotate(180deg);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Form Container Styles */
+        .terminal-form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .terminal-form-container h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e3e3e3;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Form Group Styles */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e3e3e3;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #00c6fb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 198, 251, 0.2);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #00c6fb;
+        }
+
+        .form-group input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            color: #6c757d;
+        }
+
+        .form-group input:invalid {
+            border-color: #ff4757;
+        }
+
+        .form-group input:invalid:focus {
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.2);
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        /* Button Styles */
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e3e3e3;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e3e3e3;
+            color: #2c3e50;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 91, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .terminal-form-container {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .form-group label {
+                font-size: 13px;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .terminal-form-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal-form-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .terminal-form-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .terminal-form-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Input Validation Styles */
+        .form-group input:valid {
+            border-color: #2ed573;
+        }
+
+        .form-group input:valid:focus {
+            box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2);
+        }
+
+        /* Error Message Styles */
+        .error-message {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group input:invalid + .error-message {
+            display: block;
+        }
+
+        /* Success Message Styles */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ed573;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(46, 213, 115, 0.3);
+            animation: slideIn 0.5s ease-out;
+            z-index: 1001;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.success {
+            background: #2ed573;
+        }
+
+        .notification.error {
+            background: #ff4757;
+        }
+
+        .notification i {
+            font-size: 20px;
+        }
+
+        .notification.fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Loading spinner styles */
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Side Menu -->
+    <div class="side-menu">
+        <div class="logo-container">
+            <img src="/images/coop-logo.png" alt="Coop Logo" class="logo">
+        </div>
+        <div class="menu-items">
+            <div class="menu-item" onclick="showUserManagement()">
+                <div class="menu-title">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </div>
+            </div>
+            <div class="menu-item has-submenu">
+                <div class="menu-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>ATM Monitoring</span>
+                    <i class="fas fa-chevron-down arrow"></i>
+                </div>
+                <div class="submenu">
+                    <div class="submenu-item" onclick="showCRMDashboard()">
+                        <i class="fas fa-desktop"></i>
+                        <span>CRM Dashboard</span>
+                    </div>
+                    <div class="submenu-item">
+                        <i class="fas fa-laptop"></i>
+                        <span>NCR Dashboard</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-title">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Switch Monitoring</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-title">
+                    <i class="fas fa-ethernet"></i>
+                    <span>Port Monitoring</span>
+                </div>
+            </div>
+        
+            <div class="menu-item">
+                <div class="menu-title">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Device Control</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="welcome-text">Welcome, <span id="userEmail"></span></div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div class="content-area">
+            <!-- User Management Section -->
+            <div id="userManagement" class="user-management">
+                <select id="managementSelect" class="management-select" onchange="handleManagementSelect()">
+                    <option value="" selected disabled>Select an option</option>
+                    <option value="changePassword">Change Password</option>
+                    <option value="userProfile">User Profile</option>
+                    <option value="userSettings">User Settings</option>
+                    <option value="accountSecurity">Account Security</option>
+                </select>
+
+                <!-- Change Password Form -->
+                <form id="changePasswordForm" class="change-password-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Change Password</button>
+                </form>
+            </div>
+
+            <!-- CRM Dashboard -->
+            <div id="crmDashboard" class="crm-dashboard" style="display: none;">
+                <div class="dashboard-pages">
+                    <!-- Page 1 -->
+                    <div class="dashboard-page" id="crmPage1">
+                        <div class="terminal-options">
+                            <button class="terminal-btn" onclick="addBulkTerminals()">Add Bulk Terminal</button>
+                            <button class="terminal-btn" onclick="addSingleTerminal()">Add Single Terminal</button>
+                        </div>
+                        <div class="terminals-table">
+                            <table id="terminalsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Terminal ID</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Table data will be populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="page-navigation">
+                            <button class="nav-btn" onclick="showCRMPage(2)">
+                                Next Page <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2 -->
+                    <div class="dashboard-page" id="crmPage2" style="display: none;">
+                        <div class="terminal-status">
+                            <h3>Terminal Status Overview</h3>
+                            <div class="status-cards">
+                                <div class="status-card">
+                                    <div class="card-title">Active Terminals</div>
+                                    <div class="card-value">125</div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="card-title">Inactive Terminals</div>
+                                    <div class="card-value">15</div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="card-title">Maintenance</div>
+                                    <div class="card-value">8</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-navigation">
+                            <button class="nav-btn" onclick="showCRMPage(1)">
+                                <i class="fas fa-arrow-left"></i> Previous Page
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NCR Dashboard -->
+            <div id="ncrDashboard" class="ncr-dashboard" style="display: none;">
+                <div class="dashboard-pages">
+                    <!-- Page 1 -->
+                    <div class="dashboard-page" id="ncrPage1">
+                        <div class="terminal-options">
+                            <button class="terminal-btn" onclick="addBulkNCRTerminals()">Add Bulk Terminal</button>
+                            <button class="terminal-btn" onclick="addSingleNCRTerminal()">Add Single Terminal</button>
+                        </div>
+                        <div class="terminals-table">
+                            <table id="ncrTerminalsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Terminal ID</th>
+                                        <th>Branch</th>
+                                        <th>Model</th>
+                                        <th>Status</th>
+                                        <th>Last Transaction</th>
+                                        <th>Cash Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- NCR Table data will be populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="page-navigation">
+                            <button class="nav-btn" onclick="showNCRPage(2)">
+                                Next Page <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2 -->
+                   
+                        <div class="page-navigation">
+                            <button class="nav-btn" onclick="showNCRPage(1)">
+                                <i class="fas fa-arrow-left"></i> Previous Page
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show user management section
+        function showUserManagement() {
+            document.getElementById('userManagement').style.display = 'block';
+        }
+
+        // Handle management select change
+        function handleManagementSelect() {
+            const select = document.getElementById('managementSelect');
+            const changePasswordForm = document.getElementById('changePasswordForm');
+            
+            // Hide all forms first
+            changePasswordForm.style.display = 'none';
+
+            // Show selected form
+            if (select.value === 'changePassword') {
+                changePasswordForm.style.display = 'block';
+            }
+        }
+
+        // Handle change password form submission
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert("New passwords don't match!");
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Password changed successfully!');
+                    this.reset();
+                } else {
+                    alert(data.message || 'Failed to change password');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while changing password');
+            }
+        });
+
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = JSON.parse(atob(base64));
+                document.getElementById('userEmail').textContent = payload.email;
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        }
+
+        // Toggle ATM Monitoring submenu
+        document.querySelector('.menu-item.has-submenu .menu-title').addEventListener('click', function() {
+            const menuItem = this.closest('.has-submenu');
+            menuItem.classList.toggle('active');
+        });
+
+        // Show CRM Dashboard
+        function showCRMDashboard() {
+            // Hide all other content first
+            document.querySelectorAll('.content-area > div').forEach(div => {
+                div.style.display = 'none';
+            });
+
+            // Show CRM Dashboard
+            document.getElementById('crmDashboard').style.display = 'block';
+            
+            // Load terminals data
+            loadTerminals();
+        }
+
+        // Load terminals data
+        function loadTerminals() {
+            // Sample data - replace with actual API call
+            const terminals = [
+                { id: 'T001', location: 'Branch A', status: 'Active', lastUpdated: '2024-01-20 10:30' },
+                { id: 'T002', location: 'Branch B', status: 'Inactive', lastUpdated: '2024-01-20 09:15' },
+                // Add more sample data as needed
+            ];
+
+            const tbody = document.querySelector('#terminalsTable tbody');
+            tbody.innerHTML = '';
+
+            terminals.forEach(terminal => {
+                const row = `
+                    <tr>
+                        <td>${terminal.id}</td>
+                        <td>${terminal.location}</td>
+                        <td>${terminal.status}</td>
+                        <td>${terminal.lastUpdated}</td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editTerminal('${terminal.id}')">Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteTerminal('${terminal.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Add bulk terminals
+        function addBulkTerminals() {
+            // Implement bulk terminal addition logic
+            alert('Bulk terminal addition functionality coming soon!');
+        }
+
+        // Add single terminal
+        function addSingleTerminal() {
+            const formHtml = `
+                <div class="terminal-form-container">
+                    <h2>Add CRM Terminal</h2>
+                    <form id="crmTerminalForm">
+                        <div class="form-group">
+                            <label for="terminalId">Terminal ID</label>
+                            <input type="text" id="terminalId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="branchName">Branch Name</label>
+                            <input type="text" id="branchName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" required>
+                        </div>
+                   
+                        <div class="form-group">
+                            <label for="machineIp">Machine IP</label>
+                            <input type="text" id="machineIp" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Port</label>
+                            <input type="text" id="port" value="9000" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPort">Admin Port</label>
+                            <input type="text" id="adminPort" value="9000" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="remotePort">Remote Port</label>
+                            <input type="text" id="remotePort" value="100156" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="remoteIp">Remote IP</label>
+                    <input type="text" id="adminPort" value="10.185.13.21" readonly>
+
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="closeTerminalForm()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Terminal</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            // Create modal container
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = formHtml;
+            document.body.appendChild(modal);
+
+            // Add form submit handler
+            document.getElementById('crmTerminalForm').addEventListener('submit', saveCRMTerminal);
+        }
+
+        // Function to save CRM terminal data
+        async function saveCRMTerminal(e) {
+            e.preventDefault();
+
+            const terminalData = {
+                terminalId: document.getElementById('terminalId').value,
+                branchName: document.getElementById('branchName').value,
+                location: document.getElementById('location').value,
+                machineIp: document.getElementById('machineIp').value,
+                port: document.getElementById('port').value,
+                adminPort: document.getElementById('adminPort').value,
+                remotePort: document.getElementById('remotePort').value,
+                remoteIp: document.getElementById('remoteIp').value
+            };
+
+            try {
+                const response = await fetch('/api/crm-terminals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(terminalData)
+                });
+
+                if (response.ok) {
+                    alert('Terminal added successfully!');
+                    closeTerminalForm();
+                    loadTerminals(); // Refresh the terminals list
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Failed to add terminal');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the terminal');
+            }
+        }
+
+        function closeTerminalForm() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Edit terminal
+        function editTerminal(id) {
+            alert(`Edit terminal ${id}`);
+        }
+
+        // Delete terminal
+        function deleteTerminal(id) {
+            if (confirm(`Are you sure you want to delete terminal ${id}?`)) {
+                // Implement delete logic
+                alert(`Terminal ${id} deleted`);
+                loadTerminals(); // Reload the table
+            }
+        }
+
+        function showCRMPage(pageNumber) {
+            document.querySelectorAll('#crmDashboard .dashboard-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(`crmPage${pageNumber}`).style.display = 'block';
+        }
+
+        function showNCRPage(pageNumber) {
+            document.querySelectorAll('#ncrDashboard .dashboard-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(`ncrPage${pageNumber}`).style.display = 'block';
+        }
+
+        // Update the submenu click handlers
+        document.querySelectorAll('.submenu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const dashboardType = this.querySelector('span').textContent.trim();
+                
+                // Hide all dashboards first
+                document.getElementById('crmDashboard').style.display = 'none';
+                document.getElementById('ncrDashboard').style.display = 'none';
+
+                // Show selected dashboard
+                if (dashboardType === 'CRM Dashboard') {
+                    document.getElementById('crmDashboard').style.display = 'block';
+                    loadTerminals(); // Load CRM data
+                } else if (dashboardType === 'NCR Dashboard') {
+                    document.getElementById('ncrDashboard').style.display = 'block';
+                    loadNCRTerminals(); // Load NCR data
+                }
+
+                // Remove active class from all items
+                document.querySelectorAll('.submenu-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+            });
+        });
+
+        // Make sure both loadTerminals and loadNCRTerminals are called when their respective dashboards are shown
+        function showCRMDashboard() {
+            document.getElementById('crmDashboard').style.display = 'block';
+            document.getElementById('ncrDashboard').style.display = 'none';
+            loadTerminals();
+        }
+
+        function showNCRDashboard() {
+            document.getElementById('crmDashboard').style.display = 'none';
+            document.getElementById('ncrDashboard').style.display = 'block';
+            loadNCRTerminals();
+        }
+
+        // Replace the existing loadNCRTerminals function with this updated version
+        function loadNCRTerminals() {
+            // Sample data - replace with actual API call
+            const terminals = [
+                {
+                    id: 'NCR001',
+                    branch: 'Main Branch',
+                    model: 'SelfServ 80',
+                    status: 'Active',
+                    lastTransaction: '2024-01-20 15:45',
+                    cashStatus: 'high',
+                    terminals: [
+                        { terminalId: 'T001', location: 'ATM Zone 1', status: 'Active' },
+                        { terminalId: 'T002', location: 'ATM Zone 2', status: 'Active' },
+                        { terminalId: 'T003', location: 'ATM Zone 3', status: 'Maintenance' }
+                    ]
+                },
+                {
+                    id: 'NCR002',
+                    branch: 'Downtown',
+                    model: 'SelfServ 84',
+                    status: 'Maintenance',
+                    lastTransaction: '2024-01-20 14:30',
+                    cashStatus: 'medium',
+                    terminals: [
+                        { terminalId: 'T004', location: 'Main Hall', status: 'Active' },
+                        { terminalId: 'T005', location: 'Entrance', status: 'Inactive' }
+                    ]
+                },
+                {
+                    id: 'NCR003',
+                    branch: 'Airport',
+                    model: 'SelfServ 88',
+                    status: 'Inactive',
+                    lastTransaction: '2024-01-20 12:15',
+                    cashStatus: 'low',
+                    terminals: [
+                        { terminalId: 'T006', location: 'Terminal 1', status: 'Active' },
+                        { terminalId: 'T007', location: 'Terminal 2', status: 'Active' },
+                        { terminalId: 'T008', location: 'Terminal 3', status: 'Inactive' }
+                    ]
+                }
+            ];
+
+            const tbody = document.querySelector('#ncrTerminalsTable tbody');
+            tbody.innerHTML = '';
+
+            terminals.forEach(terminal => {
+                const statusClass = `status-${terminal.status.toLowerCase()}`;
+                const cashClass = `cash-${terminal.cashStatus}`;
+                
+                // Create main row
+                const mainRow = `
+                    <tr class="main-row">
+                        <td>${terminal.id}</td>
+                        <td>${terminal.branch}</td>
+                        <td>${terminal.model}</td>
+                        <td><span class="status-indicator ${statusClass}">${terminal.status}</span></td>
+                        <td>${terminal.lastTransaction}</td>
+                        <td>
+                            <div class="cash-status">
+                                <span class="cash-indicator ${cashClass}"></span>
+                                ${terminal.cashStatus.charAt(0).toUpperCase() + terminal.cashStatus.slice(1)}
+                            </div>
+                        </td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editNCRTerminal('${terminal.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteNCRTerminal('${terminal.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="action-btn expand-btn" onclick="toggleTerminals('${terminal.id}')">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += mainRow;
+
+                // Create sub-rows for terminals
+                terminal.terminals.forEach(subTerminal => {
+                    const subStatusClass = `status-${subTerminal.status.toLowerCase()}`;
+                    const subRow = `
+                        <tr class="sub-row" data-parent="${terminal.id}" style="display: none;">
+                            <td colspan="2" style="padding-left: 40px;">
+                                ${subTerminal.terminalId}
+                            </td>
+                            <td colspan="2">
+                                ${subTerminal.location}
+                            </td>
+                            <td colspan="3">
+                                <span class="status-indicator ${subStatusClass}">${subTerminal.status}</span>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += subRow;
+                });
+            });
+        }
+
+        // Add toggle function for expanding/collapsing terminal details
+        function toggleTerminals(terminalId) {
+            const subRows = document.querySelectorAll(`tr.sub-row[data-parent="${terminalId}"]`);
+            const expandBtn = document.querySelector(`tr:has(td:contains('${terminalId}')) .expand-btn i`);
+            
+            subRows.forEach(row => {
+                if (row.style.display === 'none') {
+                    row.style.display = 'table-row';
+                    expandBtn.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                } else {
+                    row.style.display = 'none';
+                    expandBtn.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                }
+            });
+        }
+
+        // Load NCR Details Table
+        function loadNCRDetailsTable() {
+            const detailsData = [
+                {
+                    terminalId: 'NCR001',
+                    branchName: 'Main Branch',
+                    location: 'Ground Floor',
+                    modelType: 'SelfServ 80',
+                    installDate: '2023-01-15',
+                    lastService: '2024-01-10',
+                    status: 'Active'
+                },
+                {
+                    terminalId: 'NCR002',
+                    branchName: 'Downtown',
+                    location: 'Entrance Hall',
+                    modelType: 'SelfServ 84',
+                    installDate: '2023-03-20',
+                    lastService: '2024-01-15',
+                    status: 'Maintenance'
+                },
+                {
+                    terminalId: 'NCR003',
+                    branchName: 'Airport',
+                    location: 'Terminal 1',
+                    modelType: 'SelfServ 88',
+                    installDate: '2023-06-05',
+                    lastService: '2024-01-18',
+                    status: 'Active'
+                },
+                {
+                    terminalId: 'NCR004',
+                    branchName: 'Shopping Mall',
+                    location: 'Level 2',
+                    modelType: 'SelfServ 80',
+                    installDate: '2023-08-12',
+                    lastService: '2024-01-20',
+                    status: 'Inactive'
+                },
+                {
+                    terminalId: 'NCR005',
+                    branchName: 'Central Station',
+                    location: 'Main Concourse',
+                    modelType: 'SelfServ 84',
+                    installDate: '2023-09-30',
+                    lastService: '2024-01-19',
+                    status: 'Active'
+                }
+            ];
+
+            const tbody = document.querySelector('#ncrDetailsTable tbody');
+            tbody.innerHTML = '';
+
+            detailsData.forEach(detail => {
+                const statusClass = `status-${detail.status.toLowerCase()}`;
+                const row = `
+                    <tr>
+                        <td>${detail.terminalId}</td>
+                        <td>${detail.branchName}</td>
+                        <td>${detail.location}</td>
+                        <td>${detail.modelType}</td>
+                        <td>${detail.installDate}</td>
+                        <td>${detail.lastService}</td>
+                        <td><span class="status-indicator ${statusClass}">${detail.status}</span></td>
+                        <td>
+                            <button class="action-btn view-btn" onclick="viewNCRDetails('${detail.terminalId}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn edit-btn" onclick="editNCRDetails('${detail.terminalId}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn service-btn" onclick="scheduleService('${detail.terminalId}')">
+                                <i class="fas fa-tools"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Action functions
+        function viewNCRDetails(terminalId) {
+            alert(`View details for terminal ${terminalId}`);
+        }
+
+        function editNCRDetails(terminalId) {
+            alert(`Edit details for terminal ${terminalId}`);
+        }
+
+        function scheduleService(terminalId) {
+            alert(`Schedule service for terminal ${terminalId}`);
+        }
+
+        // Update the addSingleNCRTerminal function
+        function addSingleNCRTerminal() {
+            console.log('Opening NCR terminal form...');
+            const formHtml = `
+                <div class="terminal-form-container">
+                    <h2>Add NCR Terminal</h2>
+                    <form id="ncrTerminalForm">
+                        <div class="form-group">
+                            <label for="terminalId">Terminal ID</label>
+                            <input type="text" id="terminalId" name="terminalId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="branchName">Branch Name</label>
+                            <input type="text" id="branchName" name="branchName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" required>
+                        </div>
+                   
+                        <div class="form-group">
+                            <label for="machineIp">Machine IP</label>
+                            <input type="text" id="machineIp" name="machineIp" 
+                                 
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Port</label>
+                            <input type="text" id="port" name="port" value="9000" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPort">Admin Port</label>
+                            <input type="text" id="adminPort" name="adminPort" value="9000" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="remotePort">Remote Port</label>
+                            <input type="text" id="remotePort" name="remotePort" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="remoteIp">Remote IP</label>
+                            <input type="text" id="remoteIp" name="remoteIp" 
+                                  value="10.185.13.21"
+                                   required>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="closeTerminalForm()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Terminal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            // Create and add modal to DOM
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = formHtml;
+            document.body.appendChild(modal);
+            
+            console.log('Form created and added to DOM');
+
+            // Add form submit handler
+            const form = document.getElementById('ncrTerminalForm');
+            if (form) {
+                form.addEventListener('submit', saveNCRTerminal);
+                console.log('Submit handler added to form');
+            } else {
+                console.error('Form not found after creation');
+            }
+
+            // Verify all form elements exist
+            const requiredElements = [
+                'terminalId', 'branchName', 'location',
+                'machineIp', 'port', 'adminPort', 'remotePort', 'remoteIp'
+            ];
+
+            requiredElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (!element) {
+                    console.error(`Required element not found: ${elementId}`);
+                } else {
+                    console.log(`Found element: ${elementId}`);
+                }
+            });
+        }
+
+        // Add form validation function
+        function validateIPAddress(ip) {
+            const parts = ip.split('.');
+            if (parts.length !== 4) return false;
+            
+            return parts.every(part => {
+                const num = parseInt(part, 10);
+                return num >= 0 && num <= 255;
+            });
+        }
+
+        // Update saveNCRTerminal function to include validation
+        async function saveNCRTerminal(e) {
+            e.preventDefault();
+            console.log('Form submission started');
+
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                // Get all form values
+                const formData = new FormData(form);
+                const terminalData = Object.fromEntries(formData.entries());
+
+                // Validate IP addresses
+                if (!validateIPAddress(terminalData.machineIp)) {
+                    throw new Error('Invalid Machine IP address format');
+                }
+                if (!validateIPAddress(terminalData.remoteIp)) {
+                    throw new Error('Invalid Remote IP address format');
+                }
+
+                const response = await fetch('/api/ncr-terminals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(terminalData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('success', 'Terminal added successfully!');
+                    loadNCRTerminals();
+                    closeTerminalForm();
+                } else {
+                    throw new Error(data.message || 'Failed to add terminal');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', error.message);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function closeTerminalForm() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Add notification function
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
